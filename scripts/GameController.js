@@ -1,5 +1,5 @@
-import {Player} from "./Player";
-import Gameboard from "./Gameboard";
+import {Player} from "./Player.js";
+import Gameboard from "./Gameboard.js";
 
 function GameController() {
 
@@ -14,9 +14,11 @@ function GameController() {
     let currentPlayerTour = p1;
     let currentGameStatus = GameStatus.IN_PROGRESS;
 
+    // change which player is currently able to set his mark on board
     const changePlayerTour = () => {
         currentPlayerTour = currentPlayerTour === p1 ? p2 : p1;
     }
+
 
     const playRound = (row, col) => {
         if (currentGameStatus !== GameStatus.IN_PROGRESS) {
@@ -56,12 +58,21 @@ function GameController() {
             }
         }
 
-        //check if someone won in diagonals
+        /* check if someone won in diagonals
+        [x][][]
+        [][x][]
+        [][][x]
+         */
         if (board[0][0] && board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
             return {
                 gameStatus: GameStatus.WIN,
                 player: board[0][0]
             }
+        /*
+        [][][x]
+        [][x][]
+        [x][][]
+         */
         } else if( board[2][0] && board[2][0] === board[1][1] && board[1][1] === board[0][2]) {
             return {
                 gameStatus: GameStatus.WIN,
@@ -70,6 +81,7 @@ function GameController() {
         }
 
         // if none of the above happened, check for a tie
+        // if all cells are set with marks, then it's a tie
         let isAnyCellEmpty= false;
         for(let i = 0; i < rows; i++) {
             for(let j = 0; j < cols; j++) {
@@ -89,7 +101,7 @@ function GameController() {
             gameStatus: GameStatus.IN_PROGRESS,
         }
     }
-
+    // this method require object from evaluateGameStatus method, then updates currentGameStatus from that object
     const updateGameStatus = (gameStatusObj) => {
         currentGameStatus = gameStatusObj.gameStatus;
     }
