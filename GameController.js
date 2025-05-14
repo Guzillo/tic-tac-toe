@@ -23,7 +23,7 @@ function GameController() {
         currentPlayerTour = currentPlayerTour === p1 ? p2 : p1;
     }
 
-    const setMark = (row, col) => {
+    const playRound = (row, col) => {
         if (currentGameStatus !== GameStatus.IN_PROGRESS) {
             throw new Error("Game is already done");
         }
@@ -141,7 +141,7 @@ function GameController() {
 
     return {
         changePlayerTour,
-        setMark,
+        playRound,
         evaluateGameStatus,
         updateGameStatus,
     }
