@@ -18,21 +18,17 @@ const GameController = (function () {
     let hasGameStarted = false;
 
     const getHasGameStarted = () => hasGameStarted;
-    const switchHasGameStarted = () => hasGameStarted ? !hasGameStarted : hasGameStarted;
 
     const changePlayerTour = () => {
         currentPlayerTour = currentPlayerTour === p1 ? p2 : p1;
     }
 
     const startGame = (p1Name, p2Name) => {
-        switchHasGameStarted();
         try {
-            if (!gameboard) {
-                gameboard = Gameboard();
-            }
-            if (!p1 && !p2) {
-                initializePlayers(p1Name, p2Name);
-            }
+            gameboard = Gameboard();
+            initializePlayers(p1Name, p2Name);
+            currentGameStatus = GameStatus.IN_PROGRESS;
+            hasGameStarted = true;
         } catch (error) {
             console.log(error.message);
         }
@@ -114,8 +110,9 @@ const GameController = (function () {
     const getMarkedBoard = () => gameboard ? gameboard.getMarkedBoard() : '';
 
     const resetGame = () => {
+        hasGameStarted = false;
         gameboard = null;
-        currentGameStatus = GameStatus.IN_PROGRESS;
+        currentGameStatus = null;
         currentPlayerTour = p1;
     }
 
@@ -134,7 +131,6 @@ const GameController = (function () {
         resetGame,
         startGame,
         getHasGameStarted,
-        switchHasGameStarted,
     };
 })();
 

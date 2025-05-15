@@ -23,15 +23,36 @@ cells.forEach(cell => {
 
 
 const clickHandlerBoard = (event) => {
+    updateHasGameStarted();
+
     if (!hasGameStarted) {
+        gameController.startGame("O", "X");
         setButtonToRestartMode();
+        updateScreen();
+        clearGameResult();
+        updateHasGameStarted();
     }
     event.stopPropagation();
     const row = event.target.dataset.row;
     const col = event.target.dataset.col;
-    gameController.startGame("O", "X");
     gameController.playRound(row, col);
     updateScreen();
+}
+
+const clickHandlerStartRestartButton = (event) => {
+    event.stopPropagation();
+    updateHasGameStarted();
+    if (!hasGameStarted) {
+        gameController.startGame("O", "X");
+        setButtonToRestartMode();
+        updateScreen();
+        clearGameResult();
+    } else {
+        setButtonToStartMode();
+        gameController.resetGame();
+        updateScreen();
+        clearGameResult();
+    }
     updateHasGameStarted();
 }
 
@@ -84,18 +105,6 @@ const clearGameResult = () => {
 
 startRestartButton.addEventListener('click', (event) => clickHandlerStartRestartButton(event));
 
-const clickHandlerStartRestartButton = (event) => {
-    hasGameStarted = hasGameStarted ? !hasGameStarted : hasGameStarted;
-    event.stopPropagation();
-    gameController.resetGame();
-    updateScreen();
-    clearGameResult();
-    if (startRestartButton.classList.contains('start')) {
-        setButtonToRestartMode();
-    } else if (startRestartButton.classList.contains('restart')) {
-        setButtonToStartMode();
-    }
-}
 
 
 const setButtonToStartMode = () => {
