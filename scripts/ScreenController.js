@@ -31,7 +31,11 @@ const fillCells = (markedBoard, cells) => {
     let counter = 0;
     for(let i = 0; i < markedBoard.length; i++) {
         for(let j = 0; j < markedBoard[0].length; j++) {
-            cells[counter++].textContent = markedBoard[i][j];
+            const cellContent = document.createElement('span');
+            cellContent.classList.add('mark');
+            cellContent.classList.add(markedBoard[i][j].toUpperCase() === 'O' ? 'x' : 'o');
+            cellContent.textContent = markedBoard[i][j];
+            cells[counter++].appendChild(cellContent);
         }
     }
 }

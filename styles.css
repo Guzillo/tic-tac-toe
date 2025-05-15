@@ -56,3 +56,21 @@ h2#game-status {
 .cell:hover {
     background: #f0f0f0;
 }
+
+.mark {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #1986d2;
+    text-shadow: 2px 2px 4px #bdbdbd;
+    letter-spacing: 2px;
+    font-family: 'Quicksand', 'Segoe UI', 'Arial' , sans-serif;
+    transition: color 0.2s;
+}
+
+.mark.x {
+    color: #d32f2f;
+}
+
+.mark.o {
+    color: #1976d2;
+}
