@@ -1,17 +1,18 @@
 import {Player} from "./Player.js";
 import Gameboard from "./Gameboard.js";
-import gameboard from "./Gameboard.js";
+import GameStatus from "./GameStatus.js";
 
 const GameController = (function () {
-    const GameStatus = {
-        IN_PROGRESS: 'IN_PROGRESS',
-        WIN: 'WIN',
-        TIE: 'TIE',
+    let p1;
+    let p2;
+
+    const initializePlayers = (p1Name, p2Name) => {
+        p1 = Player(1, 'O', p1Name);
+        p2 = Player(2, 'X', p2Name);
+        currentPlayerTour = p1;
     }
 
-    const p1 = new Player(1, 'O');
-    const p2 = new Player(2, 'X');
-    let currentPlayerTour = p1;
+    let currentPlayerTour = undefined;
     let currentGameStatus = GameStatus.IN_PROGRESS;
     let gameboard = null;
 
@@ -19,13 +20,16 @@ const GameController = (function () {
         currentPlayerTour = currentPlayerTour === p1 ? p2 : p1;
     }
 
-    const playRound = (row, col) => {
+    const playRound = (row, col, p1Name, p2Name) => {
         if (currentGameStatus !== GameStatus.IN_PROGRESS) {
             throw new Error("Game is already done");
         }
         try {
             if (!gameboard) {
                 gameboard = Gameboard();
+            }
+            if (!p1 && !p2) {
+                initializePlayers("P1", "P2");
             }
             gameboard.setMark(row, col, currentPlayerTour);
             changePlayerTour();
@@ -102,12 +106,15 @@ const GameController = (function () {
         currentGameStatus = GameStatus.IN_PROGRESS;
     }
 
+    const getCurrentPlayerTour = () => currentPlayerTour;
+
     return {
         changePlayerTour,
         playRound,
         evaluateGameStatus,
         updateGameStatus,
         getCurrentGameStatus,
+        getCurrentPlayerTour,
         printBoard,
         getBoard,
         getMarkedBoard,
