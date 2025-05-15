@@ -1,8 +1,8 @@
 import {Player} from "./Player.js";
 import Gameboard from "./Gameboard.js";
+import gameboard from "./Gameboard.js";
 
-function GameController() {
-
+const GameController = (function () {
     const GameStatus = {
         IN_PROGRESS: 'IN_PROGRESS',
         WIN: 'WIN',
@@ -13,19 +13,21 @@ function GameController() {
     const p2 = new Player(2, 'X');
     let currentPlayerTour = p1;
     let currentGameStatus = GameStatus.IN_PROGRESS;
+    let gameboard = null;
 
-    // change which player is currently able to set his mark on board
     const changePlayerTour = () => {
         currentPlayerTour = currentPlayerTour === p1 ? p2 : p1;
     }
-
 
     const playRound = (row, col) => {
         if (currentGameStatus !== GameStatus.IN_PROGRESS) {
             throw new Error("Game is already done");
         }
         try {
-            Gameboard.setMark(row, col, currentPlayerTour);
+            if (!gameboard) {
+                gameboard = Gameboard();
+            }
+            gameboard.setMark(row, col, currentPlayerTour);
             changePlayerTour();
             const gameStatus = evaluateGameStatus();
             updateGameStatus(gameStatus);
@@ -34,58 +36,41 @@ function GameController() {
         }
     }
 
-
     const evaluateGameStatus = () => {
-         const board = Gameboard.getBoard();
-         const rows = board.length;
-         const cols = board[0].length;
-         //check if someone won in the row lines
-         for(let i = 0; i < rows; i++) {
-             if (board[i][0] && board[i][0] === board[i][1] && board[i][1] === board[i][2]) {
+        const boardArrays = gameboard.getBoard();
+        const rows = boardArrays.length;
+        const cols = boardArrays[0].length;
+        for(let i = 0; i < rows; i++) {
+            if (boardArrays[i][0] && boardArrays[i][0] === boardArrays[i][1] && boardArrays[i][1] === boardArrays[i][2]) {
                 return {
                     gameStatus: GameStatus.WIN,
-                    player: board[i][0],
+                    player: boardArrays[i][0],
                 }
-             }
-         }
-         //check if someone won in cols line
+            }
+        }
         for(let i = 0; i < cols; i++) {
-            if (board[0][i] && board[0][i] === board[1][i] && board[1][i] === board[2][i]) {
+            if (boardArrays[0][i] && boardArrays[0][i] === boardArrays[1][i] && boardArrays[1][i] === boardArrays[2][i]) {
                 return {
                     gameStatus: GameStatus.WIN,
-                    player: board[0][i],
+                    player: boardArrays[0][i],
                 }
             }
         }
-
-        /* check if someone won in diagonals
-        [x][][]
-        [][x][]
-        [][][x]
-         */
-        if (board[0][0] && board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
+        if (boardArrays[0][0] && boardArrays[0][0] === boardArrays[1][1] && boardArrays[1][1] === boardArrays[2][2]) {
             return {
                 gameStatus: GameStatus.WIN,
-                player: board[0][0]
+                player: boardArrays[0][0]
             }
-        /*
-        [][][x]
-        [][x][]
-        [x][][]
-         */
-        } else if( board[2][0] && board[2][0] === board[1][1] && board[1][1] === board[0][2]) {
+        } else if( boardArrays[2][0] && boardArrays[2][0] === boardArrays[1][1] && boardArrays[1][1] === boardArrays[0][2]) {
             return {
                 gameStatus: GameStatus.WIN,
-                player: board[2][0],
+                player: boardArrays[2][0],
             }
         }
-
-        // if none of the above happened, check for a tie
-        // if all cells are set with marks, then it's a tie
         let isAnyCellEmpty= false;
         for(let i = 0; i < rows; i++) {
             for(let j = 0; j < cols; j++) {
-                if (!board[i][j]) {
+                if (!boardArrays[i][j]) {
                     isAnyCellEmpty = true;
                 }
             }
@@ -95,15 +80,26 @@ function GameController() {
                 gameStatus: GameStatus.TIE,
             }
         }
-
-        //if it's not a win or tie it's still in_progress
         return {
             gameStatus: GameStatus.IN_PROGRESS,
         }
     }
-    // this method require object from evaluateGameStatus method, then updates currentGameStatus from that object
+
     const updateGameStatus = (gameStatusObj) => {
         currentGameStatus = gameStatusObj.gameStatus;
+    }
+
+    const getCurrentGameStatus = () => currentGameStatus;
+
+    const printBoard = () => {gameboard ? gameboard.printBoard() : undefined}
+
+    const getBoard = () => gameboard ? gameboard.getBoard() : '';
+
+    const getMarkedBoard = () => gameboard ? gameboard.getMarkedBoard() : '';
+
+    const resetGame = () => {
+        gameboard = null;
+        currentGameStatus = GameStatus.IN_PROGRESS;
     }
 
     return {
@@ -111,7 +107,12 @@ function GameController() {
         playRound,
         evaluateGameStatus,
         updateGameStatus,
-    }
-}
+        getCurrentGameStatus,
+        printBoard,
+        getBoard,
+        getMarkedBoard,
+        resetGame,
+    };
+})();
 
 export default GameController;

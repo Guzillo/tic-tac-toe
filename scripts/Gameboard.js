@@ -1,4 +1,4 @@
-const Gameboard = (function () {
+const Gameboard = () => {
     const board = [];
     const cols = 3;
     const rows = 3;
@@ -21,22 +21,24 @@ const Gameboard = (function () {
         board[row - 1][column -1] = player;
     }
 
-    const printBoard = () => {
+    const getMarkedBoard = () => {
+        const markedBoardArr = [];
         for(let i = 0; i < rows; i++) {
             const tmpArr = [];
             for(let j = 0; j < cols; j++) {
-                const mark = board[i][j] ? `[${board[i][j].getMark()}]` : '[ ]';
+                const mark = board[i][j] ? board[i][j].getMark() : ' ';
                 tmpArr.push(mark);
             }
-            console.log(tmpArr)
+            markedBoardArr.push(tmpArr)
         }
+        return markedBoardArr;
     }
 
     return {
         setMark,
-        printBoard,
+        getMarkedBoard,
         getBoard
     }
-})();
+}
 
 export default Gameboard;
