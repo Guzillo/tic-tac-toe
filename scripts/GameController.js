@@ -15,22 +15,34 @@ const GameController = (function () {
     let currentPlayerTour = undefined;
     let currentGameStatus = GameStatus.IN_PROGRESS;
     let gameboard = null;
+    let hasGameStarted = false;
+
+    const getHasGameStarted = () => hasGameStarted;
+    const switchHasGameStarted = () => hasGameStarted ? !hasGameStarted : hasGameStarted;
 
     const changePlayerTour = () => {
         currentPlayerTour = currentPlayerTour === p1 ? p2 : p1;
     }
 
-    const playRound = (row, col, p1Name, p2Name) => {
-        if (currentGameStatus !== GameStatus.IN_PROGRESS) {
-            throw new Error("Game is already done");
-        }
+    const startGame = (p1Name, p2Name) => {
+        switchHasGameStarted();
         try {
             if (!gameboard) {
                 gameboard = Gameboard();
             }
             if (!p1 && !p2) {
-                initializePlayers("P1", "P2");
+                initializePlayers(p1Name, p2Name);
             }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    const playRound = (row, col) => {
+        if (currentGameStatus !== GameStatus.IN_PROGRESS) {
+            throw new Error("Game is already done");
+        }
+        try {
             gameboard.setMark(row, col, currentPlayerTour);
             changePlayerTour();
             const gameStatus = evaluateGameStatus();
@@ -104,6 +116,7 @@ const GameController = (function () {
     const resetGame = () => {
         gameboard = null;
         currentGameStatus = GameStatus.IN_PROGRESS;
+        currentPlayerTour = p1;
     }
 
     const getCurrentPlayerTour = () => currentPlayerTour;
@@ -119,6 +132,9 @@ const GameController = (function () {
         getBoard,
         getMarkedBoard,
         resetGame,
+        startGame,
+        getHasGameStarted,
+        switchHasGameStarted,
     };
 })();
 

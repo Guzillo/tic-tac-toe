@@ -7,12 +7,15 @@ const cells = document.querySelectorAll('.cell');
 const currentPlayerSpan = document.getElementById('current-player-span');
 const startRestartButton = document.getElementById('start-restart-button');
 const startRestartButtonText = document.getElementById('start-restart-button-text');
-
-let hasGameStarted = false;
+let hasGameStarted = gameController.getHasGameStarted();
 
 document.addEventListener('DOMContentLoaded', () => {
     setButtonToStartMode();
 })
+
+const updateHasGameStarted = () => {
+    hasGameStarted = gameController.getHasGameStarted();
+}
 
 cells.forEach(cell => {
     cell.addEventListener('click', (event) => clickHandlerBoard(event));
@@ -23,12 +26,13 @@ const clickHandlerBoard = (event) => {
     if (!hasGameStarted) {
         setButtonToRestartMode();
     }
-    hasGameStarted = true;
     event.stopPropagation();
     const row = event.target.dataset.row;
     const col = event.target.dataset.col;
-    gameController.playRound(row, col, 'P1', 'P2');
+    gameController.startGame("O", "X");
+    gameController.playRound(row, col);
     updateScreen();
+    updateHasGameStarted();
 }
 
 const updateScreen = () => {
@@ -74,15 +78,18 @@ const updateGameResult = () => {
     }
 }
 
+const clearGameResult = () => {
+    gameStatusH2.textContent = '';
+}
+
 startRestartButton.addEventListener('click', (event) => clickHandlerStartRestartButton(event));
 
 const clickHandlerStartRestartButton = (event) => {
-    if (hasGameStarted) {
-        hasGameStarted = !hasGameStarted;
-    }
+    hasGameStarted = hasGameStarted ? !hasGameStarted : hasGameStarted;
     event.stopPropagation();
     gameController.resetGame();
     updateScreen();
+    clearGameResult();
     if (startRestartButton.classList.contains('start')) {
         setButtonToRestartMode();
     } else if (startRestartButton.classList.contains('restart')) {
